@@ -1,0 +1,31 @@
+Option Explicit
+Class UserRegTrim
+
+	Private myObjFSO
+	Private myObjWSH
+	Private myRC
+	
+	Private sub Class_Initialize
+	On Error Resume Next
+		Err.Clear
+	On Error Goto 0
+	End sub	
+	
+	Private sub Class_Terminate
+		On Error Resume Next
+		Err.Clear
+	On Error Goto 0
+	End sub
+	
+	Public Function RegTrim(argString)
+		Dim objRegEx,strBuf
+		Set objRegEx = New RegExp
+		objRegEx.IgnoreCase = True
+		objRegEx.pattern = "^[\s]+"
+		strBuf = objRegEx.Replace(argString,"")
+		objRegEx.pattern = "[\s]+$"
+		RegTrim = objRegEx.Replace(strBuf,"")
+		Set objRegEx = Nothing
+	End Function
+	
+End Class

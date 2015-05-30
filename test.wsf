@@ -1,0 +1,364 @@
+<PACKAGE>
+<JOB Id = "TEST_Script1">
+<OBJECT Id = "objWS"   ProgId = "WScript.Shell"/>
+<OBJECT Id = "objFSO"  ProgId = "Scripting.FileSystemObject"/>
+<SCRIPT Language = "VBScript"  Src = ".\UserRegTrim.class"/>
+<SCRIPT Language = "VBScript">
+Option Explicit
+	Dim objUserRegTrim,strResourceBuf,intMaxRC
+	Set objUserRegTrim = New UserRegTrim 
+	strResourceBuf = objUserRegTrim.RegTrim(GetResource("RESOURCE_DATA1"))
+	Dim objProc
+	Set objProc = objWS.Exec("ipconfig.exe")
+	Dim strLine,iColon,strAddress
+	Do Until objProc.StdOut.AtEndOfStream
+		strLine = objProc.StdOut.ReadLine
+		If InStr(strLine, "IPv4") <> 0 Then
+			iColon = Instr(strLine, ":")
+			strAddress = Mid(strLine, iColon + 2)
+			msgbox strAddress
+		End If
+	Loop
+	intMaxRc = objProc.ProcessID
+	msgbox intMaxRC 
+</SCRIPT>
+<RESOURCE Id = "RESOURCE_DATA1">
+	<![CDATA[
+		ようこそ
+	]]>
+</RESOURCE>		
+</JOB>
+</PACKAGE>
+
+
+
+
+
+<!--簡易説明
+■WSHリファレンス■
+<COMMENT>
+https://msdn.microsoft.com/ja-jp/library/cc364460.aspx
+</COMMENT>
+
+
+■wsfのxml構文説明■
+<COMMENT>
+<?job?> 要素
+エラー処理用の属性を指定する XML 処理の命令です。
+<?XML?> 要素
+ファイルを XML として解析するように指定します。
+<description> 要素
+ユーザーが ShowUsage() を実行するか、または /? コマンド ライン スイッチ付きでスクリプトを実行したときに表示される説明テキストを囲みます。
+<example> 要素
+スクリプトの使用例を定義します。
+<job> 要素
+Windows スクリプト ファイル (.wsf ファイル) 内のジョブを囲みます。
+<named> 要素
+スクリプトに渡す名前付き引数を定義します。
+<object> 要素
+Windows Script コンポーネント ファイルで使用され、スクリプトから参照できるオブジェクトを定義する XML 要素です。
+<package> 要素
+Windows Script Host 制御ファイル (.wsf ファイル) 内で複数のジョブ定義を囲みます。
+<reference> 要素
+外部のタイプ ライブラリへの参照を定義する XML 要素です。
+<resource> 要素
+スクリプトにハードコーディングしないテキスト データまたは数値データを囲む XML 要素です。
+<runtime> 要素
+スクリプトが受け取る複数の実行時引数をグループ化します。
+<script> 要素
+Windows スクリプト コンポーネントの動作を定義するスクリプトを囲む XML 要素です。
+</COMMENT>
+
+
+■named(引数定義)■
+<COMMENT>
+引数
+name
+記述する引数の名前を表す文字列です。コマンド ラインとスクリプトで使用する引数を定義します。
+helpstring
+引数のヘルプ説明文を表す文字列です。WSH ランタイムでは、ShowUsage メソッドまたは /? 引数を使用してヘルプ説明文を表示できます。
+type
+これは省略可能です。引数の種類を指定します。これにより、引数をコマンド ラインから解釈する方法が決まります。既定値は、simple です。
+required
+これは省略可能です。引数が必須かどうかを示すブール型の値です。Usage (使用法) の表示にのみ反映されます。
+解説
+<named> 要素は、1 組の runtime タグ内に含まれます。
+たとえば、server という名前の引数を定義すると、コマンド ライン引数として /server が追加され、同時に、server という名前の引数が WSHNamed 引数コレクションに追加されます。
+type として string を指定すると、引数は文字列になります。引数は、/named:stringvalue としてスクリプトに渡されます。
+type として Boolean を指定すると、引数はブール型になります。引数をオンにするには /named+ としてスクリプトに渡し、オフにするには /named- として渡します。
+type として simple を指定すると、引数は付加的な値をとらなくなり、指定した名前 (/named) のまま渡されます。
+例：
+<named
+   name = 名前付き引数名
+   helpstring = ヘルプ文字列
+   type = "string|boolean|simple"
+   required = ブール型の値
+/>
+</COMMENT>
+
+
+■オブジェクト一覧■
+<COMMENT>
+WScript オブジェクト
+WSH オブジェクト モデルに含まれているほとんどのオブジェクト、メソッド、およびプロパティにアクセスできます。
+WshArguments オブジェクト
+コマンド ライン パラメータのコレクション全体に、それらが入力されたとおりの順番でアクセスできます。
+WshController オブジェクト
+リモート スクリプト プロセスを作成する CreateScript() メソッドを公開します。
+WshEnvironment オブジェクト
+Microsoft Windows システム環境変数のコレクションにアクセスできます。
+WshNamed オブジェクト
+WshArguments オブジェクト内の名前付きコマンド ライン スクリプト引数にアクセスできます。
+WshNetwork オブジェクト
+コンピュータが接続されているネットワーク上の共有リソースにアクセスできます。
+WshRemote オブジェクト
+リモート スクリプト プロセスにアクセスできます。
+WshRemoteError オブジェクト
+スクリプト エラーが発生してリモート スクリプト (WshRemote オブジェクト) が異常終了した場合にエラー情報を公開します。
+WshScriptExec オブジェクト
+Exec() で実行したスクリプトに関するステータス情報およびエラー情報にアクセスできます。また、StdIn、StdOut、StdErr の各チャネルにアクセスできます。
+WshShell オブジェクト
+Windows のネイティブ シェル機能にアクセスできます。
+WshShortcut オブジェクト
+ショートカットをプログラムで作成できます。
+WshSpecialFolders オブジェクト
+Windows の専用フォルダにアクセスできます。
+WshUnnamed オブジェクト
+WshArguments オブジェクト内の名前なしコマンド ライン スクリプト引数にアクセスできます。
+WshUrlShortcut オブジェクト
+インターネット リソースへのショートカットをプログラムで作成できます。
+</COMMENT>
+
+
+■プロパティ一覧■
+<COMMENT>
+Arguments プロパティ
+WshArguments オブジェクトを返します。
+AtEndOfLine プロパティ
+入力行の末尾に達したかどうかを示すブール型の値を返します。
+AtEndOfStream プロパティ
+入力ストリームの末尾に達したかどうかを示すブール型の値を返します。
+Character プロパティ
+コード行の中でエラーがある位置の文字を報告します。
+Column プロパティ
+入力ストリーム内における現在の文字位置を示すカラム番号を返します。
+ComputerName プロパティ
+コンピュータの名前を返します。
+CurrentDirectory プロパティ
+アクティブなスクリプトの現在の作業フォルダを設定または取得できます。
+Description プロパティ
+ショートカットの説明を返します。
+Environment プロパティ
+WshEnvironment オブジェクトを返します。
+Error プロパティ (WshRemote)
+WshRemoteError オブジェクトを公開します。
+ExitCode プロパティ
+Exec() メソッドで実行したスクリプトやプログラムによって設定された終了コードを返します。
+FullName プロパティ
+完全修飾パス名を返します。
+Hotkey プロパティ
+ショートカットに対するキーの組み合わせの割り当てを設定および取得できます。
+IconLocation プロパティ
+ショートカットに対するアイコンの割り当てを設定および取得できます。
+Interactive プロパティ
+スクリプト モードをプログラムで設定および取得できます。
+Item プロパティ
+指定された項目をコレクションから公開します。
+Item プロパティ (WshNamed)
+WshNamed オブジェクト内の項目にアクセスできます。
+Item プロパティ (WshUnnamed)
+0 を基数とするインデックスを使用して項目を取得します。
+Length プロパティ
+コレクションに含まれている項目の数を返します。
+Line プロパティ (WScript)
+入力ストリーム内の現在の行番号を返します。
+Line プロパティ (WshRemote)
+スクリプト内でエラーの原因となったステートメントが含まれている行を特定します。
+Name プロパティ
+WScript オブジェクト (ホスト実行可能ファイル) の呼び名を返します。
+Number プロパティ
+スクリプト エラーを表すエラー番号を報告します。
+Path プロパティ
+WScript オブジェクト (ホスト実行可能ファイル) が格納されているディレクトリの名前を返します。
+ProcessID プロパティ
+WshScriptEcec オブジェクトから起動したプロセスのプロセス ID (PID) を返します。
+ScriptFullName プロパティ
+現在実行中のスクリプトのフル パス名を返します。
+ScriptName プロパティ
+現在実行中のスクリプトのファイル名を返します。
+Source プロパティ
+スクリプト エラーが発生した COM オブジェクトを判別します。
+SourceText プロパティ
+ソース コード内でエラーの原因になった行を返します。
+SpecialFolders プロパティ
+WshSpecialFolders オブジェクトを返します。
+Status プロパティ (WshRemote)
+リモート スクリプトの現在の実行状態を報告します。
+Status プロパティ (WshScriptExec)
+Exec() メソッドで実行したスクリプトに関するステータス情報を返します。
+StdErr プロパティ (WScript)
+現在のスクリプトの書き込み専用エラー出力ストリームを公開します。
+StdErr プロパティ (WshScriptExec)
+Exec オブジェクトの読み取り専用 stderr 出力ストリームを公開します。
+StdIn プロパティ (WScript)
+現在のスクリプトの読み取り専用入力ストリームを公開します。
+StdIn プロパティ (WshScriptExec)
+Exec オブジェクトの書き込み専用 stdin 入力ストリームを公開します。
+StdOut プロパティ (WScript)
+現在のスクリプトの書き込み専用出力ストリームを公開します。
+StdOut プロパティ (WshScriptExec)
+Exec オブジェクトの書き込み専用 stdout 出力ストリームを公開します。
+TargetPath プロパティ
+ショートカットのリンク先の実行可能ファイルのパスを設定および取得できます。
+UserDomain プロパティ
+ユーザーのドメイン名を返します。
+UserName プロパティ
+ユーザーの名前を返します。
+Version プロパティ
+WSH のバージョンを返します。
+WindowStyle プロパティ
+ショートカットに適用するウィンドウ スタイルを設定および取得できます。
+WorkingDirectory プロパティ
+ショートカットに適用する作業ディレクトリを設定および取得できます。
+</COMMENT>
+
+
+■メッソド一覧■
+<COMMENT>
+AddPrinterConnection メソッド
+DOS スタイルのプリンタ接続をコンピュータに追加します。
+AddWindowsPrinterConnection メソッド
+Windows スタイルのプリンタ接続をコンピュータに追加します。
+AppActivate メソッド
+アプリケーション ウィンドウをアクティブにします。
+Close メソッド
+開かれているストリームを閉じます。
+ConnectObject メソッド
+指定したプリフィックスでオブジェクトのイベント ソースを関数に接続します。
+Count メソッド
+WshNamed オブジェクトまたは WshUnnamed オブジェクトに格納されているスイッチの数を返します。
+CreateObject メソッド
+strProgID パラメータで指定したオブジェクトを作成します。
+CreateScript メソッド
+WshRemote オブジェクト (リモート プロセスで実行中のスクリプトのインスタンスを表すオブジェクト) を作成します。
+CreateShortcut メソッド
+ショートカットまたは URL ショートカットへのオブジェクト参照を作成します。
+DisconnectObject メソッド
+接続済みのオブジェクトを Windows Script Host から切断します。
+Echo メソッド
+ダイアログ ボックスまたはコンソールに出力を送ります。
+EnumNetworkDrives メソッド
+現在のネットワーク ドライブ マッピングを返します。
+EnumPrinterConnectionsメソッド
+現在のネットワーク プリンタ マッピングを返します。
+Exec メソッド
+子コマンド シェルでアプリケーションを実行します。stdin、stdout、stderr の各チャネルへのアクセスを可能にし、環境変数の共有を可能にします。
+Execute メソッド
+リモート スクリプト オブジェクトの実行を開始します。
+Exists メソッド
+WshNamed オブジェクトに特定のキー値が格納されているかどうかを示します。
+ExpandEnvironmentStrings メソッド
+要求された環境変数を実行中のプロセスから展開し、結果を文字列として返します。
+GetObject メソッド
+strProgID パラメータで指定したファイルまたはオブジェクトから Automation オブジェクトを取得します。
+getResource メソッド
+リソース要素で定義したリソースの値を返します。
+LogEvent メソッド
+Windows NT イベント ログまたは WSH.log ファイルにイベントを記録します。
+MapNetworkDrive メソッド
+strRemoteName で指定した共有ポイントをローカル リソース名 strLocalName にマッピングします。
+Popup メソッド
+strText に格納されているメッセージをポップアップ メッセージ ボックスに表示します。
+Quit メソッド
+指定したエラー コードを出力して実行を終了します。
+Read メソッド
+指定した数の文字を入力ストリームから読み出し、結果を文字列として返します。
+ReadAll メソッド
+入力ストリーム全体を読み出し、結果を文字列として返します。
+ReadLine メソッド
+入力ストリームから行全体 (改行文字の直前まで) を読み出し、結果を文字列として返します。
+RegDelete メソッド
+strName で指定したキーまたは値をレジストリから削除します。
+RegRead メソッド
+strName で指定したレジストリ キーまたはレジストリ値を返します。
+RegWrite メソッド
+strName で指定したレジストリ キーまたはレジストリ値を設定します。
+Remove メソッド
+strName で指定した環境変数を削除します。
+RemoveNetworkDrive メソッド
+strName で指定した現在のリソース接続を削除します。
+RemovePrinterConnection メソッド
+strName で指定した現在のリソース接続を削除します。
+Run メソッド
+strCommand を実行する新しいプロセスを作成します。
+Save メソッド
+指定した場所にショートカットを保存します。
+SendKeys メソッド
+アクティブ ウィンドウに 1 つまたは複数のキーストロークを送ります。キーボードから入力した場合と同様の結果が得られます。
+SetDefaultPrinter メソッド
+指定したリモート プリンタを既定のプリンタとして設定します。
+ShowUsage メソッド
+スクリプトの使用方法を表示します。
+Skip メソッド
+入力ストリームの読み出し時に指定した数の文字をスキップします。
+SkipLine メソッド
+入力ストリームの読み出し時に次の行をスキップします。
+Sleep メソッド
+指定した時間 (ミリ秒単位) が経過するまでスクリプト プロセスを非アクティブ状態にし、その後、実行を続行します。
+Terminate メソッド (WshScriptExec)
+Exec メソッドで開始したプロセスをスクリプト エンジンに終了させます。
+Write メソッド
+指定した文字列を出力ストリームに書き込みます。
+WriteBlankLines メソッド
+指定した数の改行文字を出力ストリームに書き込みます。
+WriteLine メソッド
+指定した文字列と改行文字を出力ストリームに書き込みます。
+</COMMENT>
+
+
+■wsfScriptの実行■
+<COMMENT>
+構文：cscript [host options...] [script name] [script options and parameters]
+例：cscript⊿"wsfファイル名"⊿//job:"ジョブ名"
+[host_option/script options and parameters]
+パラメータ	説明
+//B	バッチ モードでスクリプトを実行します。ユーザー プロンプトおよびスクリプト エラーをコマンド ライン表示しません。既定の設定は、対話モードです。
+//D	アクティブ デバッグを使用可能にします。
+//E:engine	指定したスクリプト エンジンでスクリプトを実行します。
+//H:CScript または 
+//H:Wscript	CScript.exeまたはWScript.exe をスクリプト実行用の既定アプリケーションとして登録します。どちらも指定しなければ、WScript.exe が既定のアプリケーションとみなされます。
+//I	既定値です。対話モードでスクリプトを実行します。バッチ モードとは逆に、ユーザー プロンプトおよびスクリプト エラーの表示を有効にします。
+//Job:<JobID>	指定した JobID を .wsf ファイルから実行します。
+//logo	既定値です。バナーを表示します。nologo の逆の設定です。
+//nologo	実行時にバナーを表示しません。既定の設定では、logo が適用されます。
+//S	このユーザーに対して、現在のコマンド ライン オプションを保存します。
+//T:nn	スクリプトの実行を継続できる時間の上限 (タイムアウト) を設定します。既定では、スクリプトは制限なしで実行されます。//T パラメータでタイムアウトを設定すると、スクリプトが長時間にわたって実行されるのを防止できます。実行時間が指定値を超過すると、CScript が IActiveScript::InterruptThread メソッドを使用してスクリプト エンジンに割り込み、プロセスを強制終了します。
+//U	Windows NT および Windows 2000 で使用できるオプションです。コマンド ライン出力を Unicode にします。CScript には、Unicode と ANSI を自動的に判別する機能はありません。既定の設定では、ANSI が使用されます。
+//X	スクリプトをデバッガで実行します。
+//?	コマンド パラメータの説明および使用法に関する概略を表示します。
+</COMMENT>
+
+
+■スクリプト プロパティを設定■
+<COMMENT>
+特定のスクリプトに対して .wsh ファイルを作成するには
+1.Windows エクスプローラで スクリプト ファイルを右クリックします。
+2.[プロパティ] をクリックします。
+3.スクリプトに適用する設定を選択します。
+4.[OK] または [適用] をクリックします。
+  選択したスクリプト ファイルと同じ名前の .wsh ファイルが作成されます。
+</COMMENT>
+
+
+■WshScriptExecオブジェクトの説明■
+<COMMENT>
+メソッド／プロパティ	内容
+Terminateメソッド	開始したプロセスを終了するようにスクリプト・エンジンに指示する
+ExitCodeプロパティ	実行したスクリプトまたはプログラムが設定した終了コードを返す
+ProcessIDプロパティ	WshScriptExecオブジェクトによって起動されたプロセスのプロセスID（PID）
+Statusプロパティ	実行したスクリプトのステータス情報を返す
+StdInプロパティ	Execオブジェクトのstdin入力ストリーム
+StdOutプロパティ	Execオブジェクトの書き込み専用stdout出力ストリーム
+StdErrプロパティ	Execオブジェクトのstderr出力ストリーム
+</COMMENT>
+-->
